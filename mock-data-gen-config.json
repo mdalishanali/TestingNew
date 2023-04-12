@@ -1,0 +1,18 @@
+{
+    "feilds": [
+        {
+            "schema": "Company",
+            "count": 15,
+            "staticFeilds": {
+                "userId": "61d5295b00cf1c2a000f46bf"
+            }
+        },
+        {
+            "schema": "Chat",
+            "count": 10,
+            "staticFeilds": {
+                
+            }
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "../server",
+    "sourceMap": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "target": "es5",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "services": [
+        "./services/*"
+      ],
+      "lib/*": [
+        "./*"
+      ],
+      "db/*": [
+        "./db/*"
+      ],
+      "interfaces": [
+        "./interfaces"
+      ]
+    },
+    "lib": [
+      "es2017",
+      "dom"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

@@ -1,0 +1,40 @@
+image: node:14
+pipelines:
+      branches:
+            develop:
+                  - step:
+                        name: Testing
+                        caches:
+                              - node
+                        script:
+                              - npm i
+                              - npm run server-test
+                        services: 
+                              - mongo
+             
+                  - step:
+                        name: Frontend Deployment
+                        caches:
+                              - node
+                        script:
+                              - npm i
+                              - npm run build
+                              - npm install -g firebase-tools
+                              - "firebase deploy --token=$FIREBASE_TOKEN --only hosting"
+                  - step:
+                        name: Backend Deployment
+                        caches:
+                              - node
+                        script:
+                              - apt-get update && apt-get install -y rsync
+                              - ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts 
+                              - cd $BITBUCKET_CLONE_DIR 
+                              - ssh $SSH_USER_NAME@$SERVER_IP $GO_TO_PATH ' && git pull'
+                              - ssh $SSH_USER_NAME@$SERVER_IP $GO_TO_PATH ' && npm i'
+                              - ssh $SSH_USER_NAME@$SERVER_IP $GO_TO_PATH ' && npm run tsc'
+                              - ssh $SSH_USER_NAME@$SERVER_IP $GO_TO_PATH ' && pm2 restart all'
+
+definitions: 
+  services: 
+    mongo: 
+      image: mongo

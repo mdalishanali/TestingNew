@@ -1,0 +1,1 @@
+. ./secrets/staging/env_seeding && mongorestore --archive=$ARCHIVE --drop

@@ -1,0 +1,1 @@
+. ./secrets/production/env_seeding && mongorestore --nsInclude="demoApp.*" --archive="./backup/mongoDB/production" --drop --uri=$MONGO_URL

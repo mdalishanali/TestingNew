@@ -1,0 +1,119 @@
+{
+  "extends": [
+    "tslint-eslint-rules"
+  ],
+  "rules": {
+    "class-name": true,
+    "comment-format": [
+      true,
+      "check-space"
+    ],
+    "indent": [
+      true,
+      "spaces"
+    ],
+    "no-duplicate-variable": true,
+    "no-eval": true,
+    "no-internal-module": true,
+    "deprecation": {
+      "severity": "warning"
+    },
+    "no-trailing-whitespace": true,
+    "no-var-keyword": true,
+    "one-line": [
+      true,
+      "check-open-brace",
+      "check-whitespace"
+    ],
+    "quotemark": [
+      true,
+      "single"
+    ],
+    "semicolon": [
+      true,
+      "always"
+    ],
+    "triple-equals": [
+      true,
+      "allow-null-check"
+    ],
+    "typedef": [true, "call-signature", "parameter", "member-variable-declaration"],
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      }
+    ],
+    "variable-name": [
+      true,
+      "ban-keywords"
+    ],
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-separator",
+      "check-type"
+    ],
+    "object-curly-spacing": [
+      true,
+      "always"
+    ],
+    "prefer-for-of": true,
+    "switch-default": true,
+    "curly": true,
+    "cyclomatic-complexity": [
+      true,
+      20
+    ],
+    "eofline": true,
+    "no-debugger": true,
+    "no-consecutive-blank-lines": [
+      true,
+      2
+    ],
+    "no-construct": true,
+    "no-shadowed-variable": true,
+    "radix": true,
+    "one-variable-per-declaration": [
+      true,
+      "ignore-for-loop"
+    ],
+    "object-literal-key-quotes": [
+      true,
+      "as-needed"
+    ],
+    "no-switch-case-fall-through": true,
+    "ter-arrow-parens": [
+      true,
+      "as-needed",
+      {
+        "requireForBlockBody": true
+      }
+    ],
+    "no-inner-declarations": [
+      true,
+      "functions"
+    ],
+    "no-constant-condition": true,
+    "no-unexpected-multiline": true,
+    "block-spacing": [
+      true,
+      "always"
+    ],
+    "no-console": [true, "log", "error", "warn"],
+    "no-empty": true,
+    "ban": [
+      true,
+      [
+        "alert"
+      ]
+    ],
+    "prefer-const": true
+  }
+}

@@ -1,0 +1,1 @@
+. ./secrets/staging/env_seeding && mongorestore --nsInclude="*" --archive="./backup/mongoDB/local" --drop --uri=$MONGO_URL
