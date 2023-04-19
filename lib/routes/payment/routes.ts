@@ -7,6 +7,10 @@ import { payPalService } from './../../services/paypal-service';
 import { EmailService } from './../../services/email';
 import { UsersHelpers } from './helpers/user.helper';
 import { AuthenticatedRequest } from '../../interfaces/authenticated-request';
+import { config } from '../../config';
+
+const stripe = require('stripe')(config.STRIPE_SECRET_KEY);
+
 
 export class PaymentRoutes {
   public static getPayments = async (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
@@ -94,7 +98,7 @@ export class PaymentRoutes {
         charge = await stripeService.createChargeWithSource({ loggerInUserDetails, chargeData, source });
 
       } else {
-        charge = await stripeService.createChargeWithOutSavedCard( chargeData );
+        charge = await stripeService.createChargeWithOutSavedCard(chargeData);
       }
 
       const payment = await stripeService.createPayment({ loggerInUserDetails, charge });
@@ -416,4 +420,261 @@ export class PaymentRoutes {
       next(error);
     }
   }
+
+
+  // 
+  public static createPaymentIntent = async (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
+    try {
+      const { paymentMethodType, currency, paymentMethodOptions } = req.body;
+
+      const params: any = {
+        payment_method_types: [paymentMethodType],
+        amount: 10000,
+        currency: currency,
+        description: 'Software development services',
+        shipping: {
+          name: 'Jenny Rosen',
+          address: {
+            line1: '510 Townsend St',
+            postal_code: '98140',
+            city: 'San Francisco',
+            state: 'CA',
+            country: 'US',
+          },
+        },
+      }
+
+      if (paymentMethodType === 'acss_debit') {
+        params.payment_method_options = {
+          acss_debit: {
+            mandate_options: {
+              payment_schedule: 'sporadic',
+              transaction_type: 'personal',
+            },
+          },
+        }
+      } else if (paymentMethodType === 'konbini') {
+        params.payment_method_options = {
+          konbini: {
+            product_description: 'This is desc..',
+            expires_after_days: 3,
+          },
+        }
+      } else if (paymentMethodType === 'customer_balance') {
+        params.payment_method_data = {
+          type: 'customer_balance',
+        }
+        params.confirm = true
+        params.customer = req.body.customerId || await stripe.customers.create().then(data => data.id)
+      }
+
+      const customer = await stripe.customers.create({
+        name: 'Jenny Rosen',
+        address: {
+          line1: '510 Townsend St',
+          postal_code: '98140',
+          city: 'San Francisco',
+          state: 'CA',
+          country: 'US',
+        },
+      });
+
+      params.customer = customer.id;
+
+      if (paymentMethodOptions) {
+        params.payment_method_options = paymentMethodOptions
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create(params);
+      // Send publishable key and PaymentIntent details to client
+      res.locals.code = status.OK;
+      res.locals.res_obj = {
+        clientSecret: paymentIntent.client_secret,
+        nextAction: paymentIntent.next_action,
+      };
+      return next();
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
+  public static onboardUserToStripeConnect = async (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
+    try {
+      const accountDetails = {
+        type: 'custom',
+        country: 'US',
+        email: 'code@gmail.com',
+        requested_capabilities: ['card_payments', 'transfers'],
+        business_type: 'individual',
+        individual: {
+          first_name: 'John',
+          last_name: 'Doe',
+          email: 'code@gmail.com',
+          address: {
+            line1: '123 Main St',
+            city: 'Anytown',
+            state: 'CA',
+            postal_code: '12345',
+            country: 'US',
+          },
+          verification: {
+            document: {
+              // front: 'file_123',
+              // back: 'file_456',
+            },
+          },
+        },
+        // external_account: {
+        //   object: 'card',
+        //   number: '4242424242424242',
+        //   exp_month: 10,
+        //   exp_year: 2023,
+        //   cvc: '123',
+        //   currency: 'usd',
+        // },
+        tos_acceptance: {
+          date: Math.floor(Date.now() / 1000),
+          ip: '127.0.0.1',
+        },
+        business_profile: {
+          name: 'Example Inc.',
+          // url: 'https://example.com',
+          support_phone: '+19842076461',
+        },
+        settings: {
+          payouts: {
+            schedule: {
+              interval: 'daily',
+            },
+          },
+          branding: {
+            // icon: 'file_234',
+          },
+          card_payments: {
+            decline_on: {
+              cvc_failure: true,
+            },
+          },
+        },
+        metadata: {
+          custom_id: '123',
+          preferences: 'example',
+        },
+      }
+
+      const account = await stripe.accounts.create(accountDetails);
+
+      const accountId = account.id;
+      const redirectUrl = 'http://localhost:3000/';
+      // Create the account link with the pre-filled data
+      const accountLink = await stripe.accountLinks.create({
+        account: accountId,
+        refresh_url: 'http://localhost:3000/payment/make-payment',
+        return_url: redirectUrl,
+        type: 'account_onboarding',
+      });
+
+      res.locals.code = status.OK;
+      res.locals.res_obj = accountLink
+      return next();
+
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+
+
+  }
+
+  public static splitTransferPayment = async (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: 10000,
+        currency: 'usd',
+        automatic_payment_methods: { enabled: true },
+        transfer_data: {
+          amount: 800,
+          destination: 'acct_1MxjBaRFUZ3CN3a6',
+        },
+      });
+
+      console.log(paymentIntent);
+      res.locals.code = status.OK;
+      res.locals.res_obj = paymentIntent
+      return next();
+
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+
+
+  }
+
+  public static transferMoneyToConnectedAccount = async (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
+    try {
+      const transfer = await stripe.transfers.create({
+        amount: 4000,
+        currency: 'usd',
+        destination: 'acct_1MxjBaRFUZ3CN3a6',
+        transfer_group: 'ORDER_95',
+      });
+
+      console.log(transfer);
+      res.locals.code = status.OK;
+      res.locals.res_obj = transfer
+      return next();
+
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+
+
+  }
+
+  public static refundMoenytoUser = async (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
+    try {
+      const refund = await stripe.refunds.create({
+        payment_intent: "pi_3MyTkuEqEyFlGO8P1sM5V2Qj",
+        // amount: 1000,
+      });
+      res.locals.code = status.OK;
+      console.log('refund: ', refund);
+      res.locals.res_obj = refund
+      return next();
+
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+
+
+  }
+
+  public static refundMoneytoUserStripeConnect = async (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
+    try {
+      // const charge = await stripe.charges.retrieve('ch_3MyT8eEqEyFlGO8P00aHdrlX');
+      
+      const refund = await stripe.refunds.create({
+        payment_intent: 'pi_3MyTosEqEyFlGO8P1DOf0mmH',
+        reason: 'requested_by_customer',
+      }, {
+        stripeAccount: 'acct_1MwevgEqEyFlGO8P',
+      });
+
+      res.locals.code = status.OK;
+      res.locals.res_obj = refund
+      return next();
+
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+
+
+  }
+
+
 }

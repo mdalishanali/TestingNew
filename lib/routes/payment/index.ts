@@ -19,6 +19,13 @@ export class PaymentRouter {
         this.router.put('/updateCard', PaymentRoutes.updateCard);
         this.router.post('/subscription/create', PaymentRoutes.createSubscriptionCharge);
         this.router.put('/subscription/cancelRenewal', PaymentRoutes.cancelRenewal);
+
+        this.router.post('/create/payment/intent', PaymentRoutes.createPaymentIntent);
+        this.router.post('/onboard/user/stripe', PaymentRoutes.onboardUserToStripeConnect);
+        this.router.post('/transfer/split/payment', PaymentRoutes.splitTransferPayment);
+        this.router.post('/transfer/money/connected/account', PaymentRoutes.transferMoneyToConnectedAccount);
+        this.router.post('/refund/money/user', PaymentRoutes.refundMoenytoUser);
+        this.router.post('/refund/money/connect', PaymentRoutes.refundMoneytoUserStripeConnect);
     }
 }
 

@@ -10,8 +10,9 @@ const foods = [
     "mutton"
 ];
 const category = [
-    "mens",
-    "womens"
+    "Mens",
+    "Womens",
+    "Others"
 ];
 const skills = [
     "html",
