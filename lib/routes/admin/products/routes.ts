@@ -30,13 +30,13 @@ import { category, } from '../../../../shared/enums/enum';
             
 
           },
-          {
-            fieldName:"category",
-            filterType:"Enum",
-            filterOption:category,
+          // {
+          //   fieldName:"category",
+          //   filterType:"Enum",
+          //   filterOption:category,
             
 
-          }
+          // }
     ]
     
     res.locals.code = status.OK;

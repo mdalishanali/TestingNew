@@ -99,9 +99,11 @@ export class AuthRoutes {
         throw new StandardError({ message: 'Email and Password are requried', code: status.UNPROCESSABLE_ENTITY });
       }
 
-      const firebaseUser: any = (await firebaseService.signInUser(email, password)).user.toJSON();
-
-      const user = await User.findOne({ firebaseUid: firebaseUser.uid });
+      // const firebaseUser: any = (await firebaseService.signInUser(email, password)).user.toJSON();
+      // console.log('firebaseUser: ', firebaseUser);
+      
+      // const user = await User.findOne({ firebaseUid: firebaseUser.uid });
+      const user = await User.findOne({ email: email });
       if (!user) {
         throw new StandardError({ message: 'Invalid email or password', code: status.CONFLICT });
       }

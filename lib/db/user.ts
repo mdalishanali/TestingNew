@@ -48,11 +48,12 @@ export const UserSchema = new mongoose.Schema({
   },
   roles: {
     type: String,
-    enum : ['Admin', 'Moderator', 'Super Admin'],
-    default: 'Admin'
+    enum: ['Admin', 'Moderator', 'Super Admin', 'User'],
+    default: 'User'
   },
   stripeCustomerId: {
-    type: String
+    type: String,
+    required: false
   },
   defaultCardToken: {
     type: String
@@ -89,7 +90,11 @@ export const UserSchema = new mongoose.Schema({
     ref: 'Company',
     required: false,
   },
-},  {
+  stripeAccountId: {
+    type: String,
+    required: false,
+  },
+}, {
   timestamps: true,
   toObject: {
     virtuals: true,

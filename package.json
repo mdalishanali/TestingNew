@@ -74,7 +74,7 @@
     "rxjs": "^6.6.0",
     "rxjs-compat": "^6.6.7",
     "standard-error": "^1.1.0",
-    "stripe": "^8.106.0",
+    "stripe": "^8.222.0",
     "sweetalert2": "^7.20.7",
     "tslib": "^2.0.0",
     "twilio": "^3.17.0",

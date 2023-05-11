@@ -178,12 +178,15 @@ export class UserRoutes {
 
   public static updateProfile = async (req: AuthenticatedRequest, res: express.Response, next: express.NextFunction) => {
     try {
-      const { name } = req.body.update;
+      const { name, stripeAccountId } = req.body.update;
       const update: any = {};
       if (name && !name.first || !name.last) {
         throw new StandardError({ message: 'First and last name are required!', code: status.CONFLICT });
       } else {
         update.name = name;
+      }
+      if (stripeAccountId) {
+        update.stripeAccountId = stripeAccountId
       }
       const user = req.user;
       await User.updateOne({ _id: user._id }, update, { new: true });

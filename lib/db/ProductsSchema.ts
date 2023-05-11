@@ -1,9 +1,9 @@
 
-      
-      import * as mongoose from 'mongoose';
-      const ObjectId = mongoose.Schema.Types.ObjectId;
-      import {category} from '../../shared/enums/enum';
-      export const ProductsSchema = new mongoose.Schema( {
+
+import * as mongoose from 'mongoose';
+const ObjectId = mongoose.Schema.Types.ObjectId;
+import { category } from '../../shared/enums/enum';
+export const ProductsSchema = new mongoose.Schema({
     name: {
         type: String,
         required: false
@@ -12,15 +12,19 @@
         type: Number,
         required: false
     },
-    category: {
-        type: String,
-        required: false,
-        enum: category
-    },
+    // category: {
+    //     type: String,
+    //     required: false,
+    //     enum: category
+    // },
     companyId: {
         type: ObjectId,
         required: false,
         ref: "Company"
+    },
+    sellerStripeAccountId: {
+        type: String,
+        required: true,
     },
     userId: {
         type: ObjectId,
@@ -28,7 +32,6 @@
         ref: "User"
     }
 }, { timestamps: true });
-      ProductsSchema.index(
-      {name:"text",}
-    )
-      
+ProductsSchema.index(
+    { name: "text", }
+)
